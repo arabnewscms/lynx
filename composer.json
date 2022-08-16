@@ -19,7 +19,7 @@
             "Lynx\\": "src/"
         },
         "files":[
-            "Lynx\\src/init.php"
+            "src/init.php"
         ]
     },
   "extra": {
