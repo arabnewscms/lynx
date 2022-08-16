@@ -2,9 +2,14 @@
     "name": "phpanonymous/lynx",
     "description": "automatic generate api",
      "keywords": ["api", "laravel","generate","auto","automatic","lynx"],
-      "require": {
-        "laravel/framework": "8.0",
-        "php": "^7.3|^8.0",
+      "authors":[
+    {
+        "name":"Mahmoud Ibrahim",
+        "email":"php.anonymous1@gmail.com",
+        "homepage":"https://it.phpanonymous.com"
+    }
+    ],"require": {
+         "php": "^7.3|^8.0",
         "nwidart/laravel-modules": "^9.0"
     },
     "license": "mit",
@@ -16,12 +21,20 @@
             "Lynx\\src/init.php"
         ]
     },
-    "authors": [
-        {
-            "name": "phpanonymous",
-            "email": "php.anonymous1@gmail.com"
+  "extra": {
+    "branch-alias": {
+            "dev-master": "1.0.0.x-dev"
+    },
+    "laravel": {
+        "providers": [
+           // "Lynx\\Provider"
+        ],
+        "aliases": {
+          
         }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
+  },
+  "version":"1.0.0",
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
