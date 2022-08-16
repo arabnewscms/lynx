@@ -1,0 +1,27 @@
+{
+    "name": "phpanonymous/lynx",
+    "description": "automatic generate api",
+     "keywords": ["api", "laravel","generate","auto","automatic","lynx"],
+      "require": {
+        "laravel/framework": "8.0",
+        "php": "^7.3|^8.0",
+        "nwidart/laravel-modules": "^9.0"
+    },
+    "license": "mit",
+    "autoload": {
+        "psr-4": {
+            "Lynx\\": "src/"
+        },
+        "files":[
+            "Lynx\\src/init.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "phpanonymous",
+            "email": "php.anonymous1@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
