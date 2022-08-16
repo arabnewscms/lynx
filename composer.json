@@ -28,7 +28,7 @@
     },
     "laravel": {
         "providers": [
-         
+         "Lynx\\LynxProvider"
         ],
         "aliases": {
           
