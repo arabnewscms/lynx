@@ -13,7 +13,7 @@
          "laravel/framework": "^8.0",
          "nwidart/laravel-modules": "^9.0"
     },
-    "license": "mit",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Lynx\\": "src/"
