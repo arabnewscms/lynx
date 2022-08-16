@@ -10,7 +10,8 @@
     }
     ],"require": {
          "php": "^7.3|^8.0",
-        "nwidart/laravel-modules": "^9.0"
+         "laravel/framework": "^8.0",
+         "nwidart/laravel-modules": "^9.0"
     },
     "license": "mit",
     "autoload": {
