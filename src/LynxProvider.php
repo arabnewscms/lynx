@@ -12,8 +12,8 @@ class LynxProvider extends ServiceProvider {
 	 */
 	public function boot() {
 
-		$this->publishes([__DIR__ .'lang'    => base_path('resources/lang')]);
-		$this->publishes([__DIR__ .'publish' => base_path('/')]);
+		$this->publishes([__DIR__ .'/lang'    => base_path('resources/lang')]);
+		$this->publishes([__DIR__ .'/publish' => base_path('/')]);
 
 	}
 	/**
