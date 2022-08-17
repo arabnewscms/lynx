@@ -10,6 +10,11 @@
 
 It was named after the lynx because of the excessive strength, smoothness of the face and the sharpening of the eyes, so I love this animal
 
+#### Description
+
+It can work with the <a href="https://laravel.com" target="_blank">Laravel</a> framework normally and also work with the modeling and style package <a href="https://nwidart.com/laravel-modules/v6/introduction" target="_blank">nwidart/laravel-modules</a>
+
+
 #### Version : 1.0.0
 
 This is the first beta version that was tested with the ^(8.*) version of Laravel Framework
@@ -39,6 +44,21 @@ $ composer require phpanonymous/lynx
 ```
 or if you want use main-dev
 ```
-$ composer require phpanonymous/lynx:main-dev
+$ composer require phpanonymous/lynx:dev-main
 ```
+then publish the file localization file en,ar and phpunit.xml
+```
+php artisan vendor:publish --provider="Lynx\LynxProvider"
+ 
+```
+or choose from publish list
+[*] Provider: Lynx\LynxProvider
+```
+php artisan vendor:publish
+```
+
+# usage and documentations
+<a href="https://github.com/arabnewscms/lynx/wiki">Click here to learn in a few minutes how to use it</a>
+
+
 
