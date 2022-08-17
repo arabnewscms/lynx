@@ -33,7 +33,7 @@ An easy way for front-end developers and mobile application developers to build 
 Mahmoud ibrahim
 
 # installaion 
-to install offical version run this command
+to install official version run this command
 ```
 $ composer require phpanonymous/lynx
 ```
