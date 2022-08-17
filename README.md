@@ -37,7 +37,7 @@ We also had to build a unified smart way for everyone and teams to work in an in
 An easy way for front-end developers and mobile application developers to build a unified centralization in the use and circulation of data.
 Mahmoud ibrahim
 
-# installaion 
+# installation 
 to install official version run this command
 ```
 $ composer require phpanonymous/lynx
