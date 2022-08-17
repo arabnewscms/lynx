@@ -49,7 +49,6 @@ $ composer require phpanonymous/lynx:dev-main
 then publish the file localization file en,ar and phpunit.xml
 ```
 php artisan vendor:publish --provider="Lynx\LynxProvider"
- 
 ```
 or choose from publish list
 [*] Provider: Lynx\LynxProvider
