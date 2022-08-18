@@ -1,8 +1,6 @@
 <?php
 namespace Lynx\Base;
 use App\Http\Controllers\Controller;
-
-////use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
 use Lynx\Base\Traits\Appendable;
@@ -61,9 +59,12 @@ class Api extends Controller {
 		$data = $this->appendQuery();
 		$data = $this->paginateIndex?$data->paginate(request('per_page', 15)):
 		$data->get();
-
-		// Resource Collect every json field and can reuse in resource
-		$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		if (!empty($this->resourcesJson)) {
+			// Resource Collect every json field and can reuse in resource
+			$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		} else {
+			$collection = $data;
+		}
 
 		return lynx()->data($collection)
 		             ->status(200)
@@ -85,8 +86,12 @@ class Api extends Controller {
 		$data = $this->paginateIndex?$data->paginate(request('per_page', 15)):
 		$data->get();
 
-		// Resource Collect every json field and can reuse in resource
-		$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		if (!empty($this->resourcesJson)) {
+			// Resource Collect every json field and can reuse in resource
+			$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		} else {
+			$collection = $data;
+		}
 
 		return lynx()->data($collection)
 		             ->status(200)
