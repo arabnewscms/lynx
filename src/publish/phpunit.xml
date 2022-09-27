@@ -12,7 +12,7 @@
             <directory suffix="blade.php">./Modules</directory>
             <directory suffix=".php">./Modules/**/Config</directory>
             <directory suffix=".php">./Modules/**/Database</directory>
-            <directory suffix=".php">./Modules/**/Nova</directory>
+            <directory suffix=".php">./Modules/**/Dash</directory>
             <directory suffix=".php">./Modules/**/Providers</directory>
             <directory suffix=".php">./Modules/**/Resources</directory>
             <directory suffix=".php">./Modules/**/Routes</directory>
