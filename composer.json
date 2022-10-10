@@ -9,9 +9,7 @@
         "homepage":"https://github.com/arabnewscms"
     }
     ],"require": {
-         "php": "^7.3|^8.0",
-         "laravel/framework": "^8.0",
-         "nwidart/laravel-modules": "^8.0"
+         
     },
     "license": "MIT",
     "autoload": {
