@@ -8,9 +8,7 @@
         "email":"php.anonymous1@gmail.com",
         "homepage":"https://github.com/arabnewscms"
     }
-    ],"require": {
-         
-    },
+    ], 
     "license": "MIT",
     "autoload": {
         "psr-4": {
