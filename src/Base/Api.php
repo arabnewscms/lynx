@@ -111,15 +111,6 @@ class Api extends Controller {
 			return $can;
 		}
 
-		if (count($this->rules('store')) == 0) {
-			$messageForDeveloper = __('lynx.must_add_rules', [
-					'columns' => implode(',', (new $this->entity)->getFillable()),
-				]);
-			return lynx()->status(422)
-			             ->message($messageForDeveloper)
-			             ->response();
-		}
-
 		$this->data = $this->validate(request(),
 			$this->rules('store'), [],
 			method_exists($this, 'niceName')?
@@ -128,7 +119,11 @@ class Api extends Controller {
 
 		$this->data = $this->beforeStore($this->data);
 
-		$store = $this->entity::create($this->allInputsWithoutFiles());
+		$store = new $this->entity;
+		foreach ($this->allInputsWithoutFiles() as $k => $v) {
+			$store->$k = $v;
+		}
+		$store = $store->save();
 		$this->afterStore($store);
 		return lynx()->data($this->FullJsonInStore?$store:['id' => $store->id])
 		->status(200)
@@ -170,13 +165,6 @@ class Api extends Controller {
 			return $can;
 		}
 
-		if (count($this->rules('update', $id)) == 0) {
-			$messageForDeveloper = 'must be add rules method on your parent class or following fillable columns '.implode(',', (new $this->entity)->getFillable());
-			return lynx()->status(422)
-			             ->message($messageForDeveloper)
-			             ->response();
-		}
-
 		// Check Record is exist
 		if (is_null($data = $this->entity::find($id))) {
 			return lynx()           ->status(404)
@@ -193,7 +181,12 @@ class Api extends Controller {
 
 		$this->beforeUpdate($data);
 
-		$update = $this->entity::where('id', $id)->update($this->allInputsWithoutFiles());
+		$update = $this->entity::find($id);
+		foreach ($this->allInputsWithoutFiles() as $k => $v) {
+			$update->$k = $v;
+		}
+		$update->save();
+
 		$this->afterUpdate($data = $this->entity::find($id));
 		return lynx()->data($this->FullJsonInUpdate?$data:['id' => $data->id])
 		->status(200)
