@@ -118,12 +118,12 @@ class Api extends Controller {
 		);
 
 		$this->data = $this->beforeStore($this->data);
-
-		$store = new $this->entity;
+		$entity     = $this->entity;
+		$store      = new $entity();
 		foreach ($this->allInputsWithoutFiles() as $k => $v) {
 			$store->$k = $v;
 		}
-		$store = $store->save();
+		$storeSave = $store->save();
 		$this->afterStore($store);
 		return lynx()->data($this->FullJsonInStore?$store:['id' => $store->id])
 		->status(200)
@@ -180,15 +180,23 @@ class Api extends Controller {
 		);
 
 		$this->beforeUpdate($data);
-
 		$update = $this->entity::find($id);
+
 		foreach ($this->allInputsWithoutFiles() as $k => $v) {
-			$update->$k = $v;
+			$update->{ $k} = $v;
 		}
 		$update->save();
+		$data = $this->entity::find($id);
 
-		$this->afterUpdate($data = $this->entity::find($id));
-		return lynx()->data($this->FullJsonInUpdate?$data:['id' => $data->id])
+		$this->afterUpdate($data);
+		return lynx()->data(
+			$this->FullJsonInUpdate?
+			$data
+			:
+			[
+				'id' => $data->id,
+			]
+		)
 		->status(200)
 		->message(__('lynx.recored_updated'))
 		->response();
