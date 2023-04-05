@@ -119,13 +119,17 @@ class Api extends Controller {
 
 		$this->data = $this->beforeStore($this->data);
 		$entity     = $this->entity;
-		$store      = new $entity();
-		foreach ($this->allInputsWithoutFiles() as $k => $v) {
-			$store->$k = $v;
-		}
-		$storeSave = $store->save();
-		$this->afterStore($store);
-		return lynx()->data($this->FullJsonInStore?$store:['id' => $store->id])
+	    // $store      = new $entity();
+		// foreach ($this->allInputsWithoutFiles() as $k => $v) {
+        //     $store->$k = $v;
+		// }
+
+		//$storeSave = $store->save();
+        //dd($this->allInputsWithoutFiles());
+		$storeSave = $entity::create($this->allInputsWithoutFiles());
+        //dd($storeSave);
+		$this->afterStore($storeSave);
+		return lynx()->data($this->FullJsonInStore?$storeSave:['id' => $storeSave->id])
 		->status(200)
 		->message(__('lynx.recored_added'))
 		->response();
@@ -173,6 +177,7 @@ class Api extends Controller {
 		}
 
 		// Validation Errors
+
 		$this->data = $this->validate(request(),
 			$this->rules('update'), [],
 			method_exists($this->entity, 'niceName')?
@@ -180,12 +185,21 @@ class Api extends Controller {
 		);
 
 		$this->beforeUpdate($data);
-		$update = $this->entity::find($id);
+        $fillability = [];
 
-		foreach ($this->allInputsWithoutFiles() as $k => $v) {
-			$update->{ $k} = $v;
-		}
-		$update->save();
+        foreach($this->allInputsWithoutFiles() as $key=>$val){
+if(in_array($key, app($this->entity)->getFillable())) {
+    $fillability[$key] = request($key);
+}
+        }
+
+
+		$update = $this->entity::where('id',$id)->update($fillability);
+
+		// foreach ($this->allInputsWithoutFiles() as $k => $v) {
+		// 	$update->{ $k} = $v;
+		// }
+		// $update->save();
 		$data = $this->entity::find($id);
 
 		$this->afterUpdate($data);
