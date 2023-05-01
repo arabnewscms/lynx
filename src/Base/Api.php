@@ -34,9 +34,12 @@ class Api extends Controller {
 		$this->definePolicy();
 	}
 
-	protected function can($fn) {
+	protected function can($fn,$model) {
 		if (class_exists($this->policy)) {
-			return !auth()       ->guard($this->guard)->user()->can($fn.'-'.$this->policy_key, $this->entity)?lynx()->status(403)
+            //.'-'.$this->policy_key
+            // dd(\auth()       ->guard($this->guard)->user()->can($fn, $model));
+
+			return !auth()       ->guard($this->guard)->user()->can($fn, $model)?lynx()->status(403)
 			->message(__('lynx.need_permission'))
 			->response():true;
 		} else {
@@ -77,7 +80,7 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function index() {
-		$can = $this->can('viewAny');
+		$can = $this->can('viewAny',$this->entity);
 		if ($can !== true) {
 			return $can;
 		}
@@ -106,7 +109,7 @@ class Api extends Controller {
 	 */
 	public function store() {
 
-		$can = $this->can('create');
+		$can = $this->can('create',$this->entity);
 		if ($can !== true) {
 			return $can;
 		}
@@ -141,12 +144,13 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function show($id) {
-		$can = $this->can('view');
+        $data = $this->appendShowQuery()->where('id', $id)->first();
+		$can = $this->can('view',$data);
 		if ($can !== true) {
 			return $can;
 		}
 
-		$data = $this->appendShowQuery()->where('id', $id)->first();
+
 		if (is_null($data)) {
 			return lynx()->status(404)
 			             ->message(__('lynx.not_found'))
@@ -163,14 +167,14 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function update($id) {
-
-		$can = $this->can('update');
+        $data = $this->entity::find($id);
+		$can = $this->can('update',$data);
 		if ($can !== true) {
 			return $can;
 		}
 
 		// Check Record is exist
-		if (is_null($data = $this->entity::find($id))) {
+		if (is_null($data)) {
 			return lynx()           ->status(404)
 			                        ->message(__('lynx.not_found'))
 			                        ->response();
@@ -223,16 +227,18 @@ if(in_array($key, app($this->entity)->getFillable())) {
 	 */
 	public function destroy($id) {
 
-		$can = $this->can('delete');
-		if ($can !== true) {
-			return $can;
-		}
-
-		if ($this->withTrashed) {
+        if ($this->withTrashed) {
 			$data = $this->entity::withTrashed()->find($id);
 		} else {
 			$data = $this->entity::find($id);
 		}
+
+		$can = $this->can('delete',$data);
+		if ($can !== true) {
+			return $can;
+		}
+
+
 
 		// Check Record is exist
 		if (is_null($data)) {
@@ -260,16 +266,17 @@ if(in_array($key, app($this->entity)->getFillable())) {
 	 */
 	public function forceDelete($id) {
 
-		$can = $this->can('forceDelete');
-		if ($can !== true) {
-			return $can;
-		}
-
 		if ($this->withTrashed) {
 			$data = $this->entity::withTrashed()->find($id);
 		} else {
 			$data = $this->entity::find($id);
 		}
+
+		$can = $this->can('forceDelete',$data);
+		if ($can !== true) {
+			return $can;
+		}
+
 
 		// Check Record is exist
 		if (is_null($data)) {
@@ -293,17 +300,18 @@ if(in_array($key, app($this->entity)->getFillable())) {
 	 * @return Renderable
 	 */
 	public function restore($id) {
-
-		$can = $this->can('restore');
-		if ($can !== true) {
-			return $can;
-		}
-
-		if ($this->withTrashed) {
+        if ($this->withTrashed) {
 			$data = $this->entity::withTrashed()->find($id);
 		} else {
 			$data = $this->entity::find($id);
 		}
+
+		$can = $this->can('restore',$data);
+		if ($can !== true) {
+			return $can;
+		}
+
+
 
 		// Check Record is exist
 		if (is_null($data)) {
