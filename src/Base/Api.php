@@ -184,8 +184,8 @@ class Api extends Controller {
 
 		$this->data = $this->validate(request(),
 			$this->rules('update'), [],
-			method_exists($this->entity, 'niceName')?
-			$this->entity::niceName():[]
+			method_exists($this, 'niceName')?
+			$this->niceName():[]
 		);
 
 		$this->beforeUpdate($data);
