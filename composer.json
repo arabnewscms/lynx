@@ -8,11 +8,7 @@
         "email":"php.anonymous1@gmail.com",
         "homepage":"https://github.com/arabnewscms"
     }
-    ],"require": {
-         "php": "^7.3|^8.0",
-         "laravel/framework": "^8.0",
-         "nwidart/laravel-modules": "^9.0"
-    },
+    ],
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -24,18 +20,18 @@
     },
   "extra": {
     "branch-alias": {
-            "dev-master": "1.0.0.x-dev"
+            "dev-master": "1.0.9.x-dev"
     },
     "laravel": {
         "providers": [
          "Lynx\\LynxProvider"
         ],
         "aliases": {
-          
+
         }
     }
   },
-  "version":"1.0.0",
+  "version":"1.0.9",
   "minimum-stability": "dev",
   "prefer-stable": true
 }

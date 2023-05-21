@@ -51,6 +51,15 @@ trait Queryable {
 	 * master of query method
 	 * @return query methods
 	 */
+	public function afterShow($entity):Object {
+       // return new $this->resourcesJson($entity);
+        return $entity;
+	}
+
+	/**
+	 * master of query method
+	 * @return query methods
+	 */
 	public function afterDestroy($entity):void {}
 
 	/**

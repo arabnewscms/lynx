@@ -1,8 +1,6 @@
 <?php
 namespace Lynx\Base;
 use App\Http\Controllers\Controller;
-
-////use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
 use Lynx\Base\Traits\Appendable;
@@ -36,9 +34,12 @@ class Api extends Controller {
 		$this->definePolicy();
 	}
 
-	protected function can($fn) {
+	protected function can($fn,$model) {
 		if (class_exists($this->policy)) {
-			return !auth()       ->guard($this->guard)->user()->can($fn.'-'.$this->policy_key, $this->entity)?lynx()->status(403)
+            //.'-'.$this->policy_key
+            // dd(\auth()       ->guard($this->guard)->user()->can($fn, $model));
+
+			return !auth()       ->guard($this->guard)->user()->can($fn, $model)?lynx()->status(403)
 			->message(__('lynx.need_permission'))
 			->response():true;
 		} else {
@@ -61,9 +62,12 @@ class Api extends Controller {
 		$data = $this->appendQuery();
 		$data = $this->paginateIndex?$data->paginate(request('per_page', 15)):
 		$data->get();
-
-		// Resource Collect every json field and can reuse in resource
-		$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		if (!empty($this->resourcesJson)) {
+			// Resource Collect every json field and can reuse in resource
+			$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		} else {
+			$collection = $data;
+		}
 
 		return lynx()->data($collection)
 		             ->status(200)
@@ -76,7 +80,7 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function index() {
-		$can = $this->can('viewAny');
+		$can = $this->can('viewAny',$this->entity);
 		if ($can !== true) {
 			return $can;
 		}
@@ -85,8 +89,12 @@ class Api extends Controller {
 		$data = $this->paginateIndex?$data->paginate(request('per_page', 15)):
 		$data->get();
 
-		// Resource Collect every json field and can reuse in resource
-		$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		if (!empty($this->resourcesJson)) {
+			// Resource Collect every json field and can reuse in resource
+			$collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+		} else {
+			$collection = $data;
+		}
 
 		return lynx()->data($collection)
 		             ->status(200)
@@ -101,18 +109,9 @@ class Api extends Controller {
 	 */
 	public function store() {
 
-		$can = $this->can('create');
+		$can = $this->can('create',$this->entity);
 		if ($can !== true) {
 			return $can;
-		}
-
-		if (count($this->rules('store')) == 0) {
-			$messageForDeveloper = __('lynx.must_add_rules', [
-					'columns' => implode(',', (new $this->entity)->getFillable()),
-				]);
-			return lynx()->status(422)
-			             ->message($messageForDeveloper)
-			             ->response();
 		}
 
 		$this->data = $this->validate(request(),
@@ -122,10 +121,18 @@ class Api extends Controller {
 		);
 
 		$this->data = $this->beforeStore($this->data);
+		$entity     = $this->entity;
+	    // $store      = new $entity();
+		// foreach ($this->allInputsWithoutFiles() as $k => $v) {
+        //     $store->$k = $v;
+		// }
 
-		$store = $this->entity::create($this->allInputsWithoutFiles());
-		$this->afterStore($store);
-		return lynx()->data($this->FullJsonInStore?$store:['id' => $store->id])
+		//$storeSave = $store->save();
+        //dd($this->allInputsWithoutFiles());
+		$storeSave = $entity::create($this->allInputsWithoutFiles());
+        //dd($storeSave);
+		$this->afterStore($storeSave);
+		return lynx()->data($this->FullJsonInStore?$storeSave:['id' => $storeSave->id])
 		->status(200)
 		->message(__('lynx.recored_added'))
 		->response();
@@ -137,17 +144,19 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function show($id) {
-		$can = $this->can('view');
+        $data = $this->appendShowQuery()->where('id', $id)->first();
+		$can = $this->can('view',$data);
 		if ($can !== true) {
 			return $can;
 		}
 
-		$data = $this->appendShowQuery()->where('id', $id)->first();
+
 		if (is_null($data)) {
 			return lynx()->status(404)
 			             ->message(__('lynx.not_found'))
 			             ->response();
 		} else {
+           $data = $this->afterShow($data);
 			return lynx()->data($data)->response();
 		}
 	}
@@ -159,38 +168,54 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function update($id) {
-
-		$can = $this->can('update');
+        $data = $this->entity::find($id);
+		$can = $this->can('update',$data);
 		if ($can !== true) {
 			return $can;
 		}
 
-		if (count($this->rules('update', $id)) == 0) {
-			$messageForDeveloper = 'must be add rules method on your parent class or following fillable columns '.implode(',', (new $this->entity)->getFillable());
-			return lynx()->status(422)
-			             ->message($messageForDeveloper)
-			             ->response();
-		}
-
 		// Check Record is exist
-		if (is_null($data = $this->entity::find($id))) {
+		if (is_null($data)) {
 			return lynx()           ->status(404)
 			                        ->message(__('lynx.not_found'))
 			                        ->response();
 		}
 
 		// Validation Errors
+
 		$this->data = $this->validate(request(),
 			$this->rules('update'), [],
-			method_exists($this->entity, 'niceName')?
-			$this->entity::niceName():[]
+			method_exists($this, 'niceName')?
+			$this->niceName():[]
 		);
 
 		$this->beforeUpdate($data);
+        $fillability = [];
 
-		$update = $this->entity::where('id', $id)->update($this->allInputsWithoutFiles());
-		$this->afterUpdate($data = $this->entity::find($id));
-		return lynx()->data($this->FullJsonInUpdate?$data:['id' => $data->id])
+        foreach($this->allInputsWithoutFiles() as $key=>$val){
+if(in_array($key, app($this->entity)->getFillable())) {
+    $fillability[$key] = request($key);
+}
+        }
+
+
+		$update = $this->entity::where('id',$id)->update($fillability);
+
+		// foreach ($this->allInputsWithoutFiles() as $k => $v) {
+		// 	$update->{ $k} = $v;
+		// }
+		// $update->save();
+		$data = $this->entity::find($id);
+
+		$this->afterUpdate($data);
+		return lynx()->data(
+			$this->FullJsonInUpdate?
+			$data
+			:
+			[
+				'id' => $data->id,
+			]
+		)
 		->status(200)
 		->message(__('lynx.recored_updated'))
 		->response();
@@ -203,16 +228,18 @@ class Api extends Controller {
 	 */
 	public function destroy($id) {
 
-		$can = $this->can('delete');
-		if ($can !== true) {
-			return $can;
-		}
-
-		if ($this->withTrashed) {
+        if ($this->withTrashed) {
 			$data = $this->entity::withTrashed()->find($id);
 		} else {
 			$data = $this->entity::find($id);
 		}
+
+		$can = $this->can('delete',$data);
+		if ($can !== true) {
+			return $can;
+		}
+
+
 
 		// Check Record is exist
 		if (is_null($data)) {
@@ -240,16 +267,17 @@ class Api extends Controller {
 	 */
 	public function forceDelete($id) {
 
-		$can = $this->can('forceDelete');
-		if ($can !== true) {
-			return $can;
-		}
-
 		if ($this->withTrashed) {
 			$data = $this->entity::withTrashed()->find($id);
 		} else {
 			$data = $this->entity::find($id);
 		}
+
+		$can = $this->can('forceDelete',$data);
+		if ($can !== true) {
+			return $can;
+		}
+
 
 		// Check Record is exist
 		if (is_null($data)) {
@@ -273,17 +301,18 @@ class Api extends Controller {
 	 * @return Renderable
 	 */
 	public function restore($id) {
-
-		$can = $this->can('restore');
-		if ($can !== true) {
-			return $can;
-		}
-
-		if ($this->withTrashed) {
+        if ($this->withTrashed) {
 			$data = $this->entity::withTrashed()->find($id);
 		} else {
 			$data = $this->entity::find($id);
 		}
+
+		$can = $this->can('restore',$data);
+		if ($can !== true) {
+			return $can;
+		}
+
+
 
 		// Check Record is exist
 		if (is_null($data)) {
