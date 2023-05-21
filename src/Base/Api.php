@@ -156,6 +156,7 @@ class Api extends Controller {
 			             ->message(__('lynx.not_found'))
 			             ->response();
 		} else {
+           $data = $this->afterShow($data);
 			return lynx()->data($data)->response();
 		}
 	}

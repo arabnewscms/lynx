@@ -8,7 +8,7 @@
         "email":"php.anonymous1@gmail.com",
         "homepage":"https://github.com/arabnewscms"
     }
-    ], 
+    ],
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -20,18 +20,18 @@
     },
   "extra": {
     "branch-alias": {
-            "dev-master": "1.0.8.x-dev"
+            "dev-master": "1.0.9.x-dev"
     },
     "laravel": {
         "providers": [
          "Lynx\\LynxProvider"
         ],
         "aliases": {
-          
+
         }
     }
   },
-  "version":"1.0.8",
+  "version":"1.0.9",
   "minimum-stability": "dev",
   "prefer-stable": true
 }
