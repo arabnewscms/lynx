@@ -1,20 +1,18 @@
 <?php
 namespace Lynx\Base;
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Access\Response;
-use Illuminate\Http\Request;
+
 use Lynx\Base\Traits\Appendable;
 use Lynx\Base\Traits\Policy;
 use Lynx\Base\Traits\Queryable;
 use Lynx\Base\Traits\Validation;
 
-abstract
-
-class Api extends Controller {
+abstract class Api extends Controller {
 	use Validation, Appendable, Queryable, Policy;
 
 	protected $entity;
 	protected $policy_key;
+	protected $spatieQueryBuilder = false;
 	protected $policy;
 	protected $guard;
 	protected $data;
@@ -31,8 +29,15 @@ class Api extends Controller {
 	protected $resourcesJson;
 
 	public function __construct() {
+        if($this->spatieQueryBuilder === true){
+            if(!class_exists(\Spatie\QueryBuilder\QueryBuilder::class)){
+                throw new \Exception('You need to add "spatie/laravel-query-builder" as a Composer dependency. visit https://github.com/spatie/laravel-query-builder');
+            }
+        }
 		$this->definePolicy();
 	}
+
+    
 
 	protected function can($fn,$model) {
 		if (class_exists($this->policy)) {
