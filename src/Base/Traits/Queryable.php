@@ -3,6 +3,19 @@ namespace Lynx\Base\Traits;
 
 trait Queryable {
 
+    /**
+     * replace_entity
+     * to check if use Spatie QueryBuilder Package
+     * https://github.com/spatie/laravel-query-builder
+     * @return object
+     */
+    protected function replace_entity(){
+
+        return $this->spatieQueryBuilder?
+            \Spatie\QueryBuilder\QueryBuilder::for($this->entity) : new $this->entity;
+
+    }
+
 	/**
 	 * master of query method
 	 * @return query methods
@@ -85,7 +98,7 @@ trait Queryable {
 	 * @return entity query
 	 */
 	public function appendQuery() {
-		$query = $this->query(new $this->entity)->orderBy(request('orderBy', 'id'), request('sort', 'desc'));
+		$query = $this->query($this->replace_entity())->orderBy(request('orderBy', 'id'), request('sort', 'desc'));
 		if (request('limit') > 0) {
 			$query = $query->limit('limit', request('limit'));
 		}
@@ -96,7 +109,7 @@ trait Queryable {
 	 * @return entity query
 	 */
 	public function appendShowQuery() {
-		return $this->beforeShow(new $this->entity)->orderBy(request('orderBy', 'id'), request('sort', 'desc'));
+		return $this->beforeShow($this->replace_entity())->orderBy(request('orderBy', 'id'), request('sort', 'desc'));
 	}
 
 }
