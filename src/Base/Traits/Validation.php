@@ -3,7 +3,7 @@ namespace Lynx\Base\Traits;
 
 trait Validation {
 
-	public function rules(string $type, int $id = null):array{
+	public function rules(string $type, mixed $id):array{
 		return [];
 	}
 
