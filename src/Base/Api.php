@@ -63,6 +63,7 @@ abstract class Api extends Controller
      */
     public function indexAny()
     {
+     
         if (!$this->indexGuest) {
             return lynx()
                 ->status(422)
@@ -71,15 +72,14 @@ abstract class Api extends Controller
         }
 
         $data = $this->appendQuery();
-        $data = $this->paginateIndex ? $data->paginate(request('per_page', 15)) :
-            $data->get();
+        $data = $this->paginateIndex ? $data->paginate(request('per_page', 15)) : $data->get();
         if (!empty($this->resourcesJson)) {
             // Resource Collect every json field and can reuse in resource
             $collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
         } else {
             $collection = $data;
         }
-
+    
         return lynx()->data($collection)
             ->status(200)
             ->message(__('lynx.successfully'))
@@ -92,6 +92,8 @@ abstract class Api extends Controller
      */
     public function index()
     {
+
+      
         $can = $this->can('viewAny', $this->entity);
         if ($can !== true) {
             return $can;
@@ -100,10 +102,10 @@ abstract class Api extends Controller
         $data = $this->appendQuery();
         $data = $this->paginateIndex ? $data->paginate(request('per_page', 15)) :
             $data->get();
-
-        if (!empty($this->resourcesJson)) {
-            // Resource Collect every json field and can reuse in resource
-            $collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+            if (!empty($this->resourcesJson)) {
+                // Resource Collect every json field and can reuse in resource
+                $collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
+                
         } else {
             $collection = $data;
         }
@@ -152,13 +154,14 @@ abstract class Api extends Controller
      */
     public function show($id)
     {
+
         $data = $this->appendShowQuery()->where('id', $id)->first();
         $can = $this->can('view', $data);
         if ($can !== true) {
             return $can;
         }
-
-
+        
+ 
         if (is_null($data)) {
             return lynx()->status(404)
                 ->message(__('lynx.not_found'))
@@ -194,7 +197,7 @@ abstract class Api extends Controller
 
         $this->data = $this->validate(
             request(),
-            $this->rules('update'),
+            $this->rules('update',$id),
             [],
             method_exists($this, 'niceName') ?
                 $this->niceName() : []
