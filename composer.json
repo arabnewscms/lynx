@@ -19,7 +19,7 @@
         ]
     },
     "require": {
-        "laravel/framework": "^10.*"
+        "laravel/framework": ">= 10"
     },
   "extra": {
     "branch-alias": {
