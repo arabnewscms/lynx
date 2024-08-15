@@ -19,7 +19,7 @@
         ]
     },
     "require": {
-        "laravel/framework": ">= 10"
+        "laravel/framework": "^10.0"
     },
   "extra": {
     "branch-alias": {
@@ -34,7 +34,6 @@
         }
     }
   },
-  "version":"1.0.14",
   "minimum-stability": "RC",
   "prefer-stable": true
 }
