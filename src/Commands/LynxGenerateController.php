@@ -61,7 +61,7 @@ class LynxGenerateController extends Command
         $namespace = $module ? 'Modules\\' . $module . '\App\Http\Controllers\Api' : 'App\Http\Controllers\Api';
         $stub = file_get_contents(str_replace('\\', '/', $stubPath) . '/' . $type . '.stub');
         $stub = str_replace('{{namespace}}', $namespace, $stub);
-        $stub = str_replace('{{class}}', $name, $stub);
+        $stub = str_replace('{{class}}', $name.'Controller', $stub);
 
         // Add Model Namespace
         if ($this->option('module')) {
