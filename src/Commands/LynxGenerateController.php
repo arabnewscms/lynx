@@ -36,7 +36,7 @@ class LynxGenerateController extends Command
         $model = $this->option('model');
         $module = $this->option('module');
 
-        $stubPath = base_path('app/Console/Commands/stubs');
+        $stubPath = __DIR__.'/stubs';
 
         if ($controller) {
             $this->generateFile('api_controller', $controller, $module, $stubPath);
@@ -48,6 +48,10 @@ class LynxGenerateController extends Command
 
         if ($resource) {
             $this->generateFile('resource', $controller, $module, $stubPath);
+        }
+
+        if ($model) {
+            $this->generateFile('model', $controller, $module, $stubPath);
         }
 
         $this->info($controller . ' Lyux generated successfully.');
