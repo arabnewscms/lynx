@@ -1,9 +1,8 @@
 <?php
-
 namespace Lynx\Base;
 
 use App\Http\Controllers\Controller;
-
+use Illuminate\Http\Request;
 use Lynx\Base\Traits\Appendable;
 use Lynx\Base\Traits\Policy;
 use Lynx\Base\Traits\Queryable;
@@ -63,7 +62,7 @@ abstract class Api extends Controller
      */
     public function indexAny()
     {
-     
+
         if (!$this->indexGuest) {
             return lynx()
                 ->status(422)
@@ -79,7 +78,7 @@ abstract class Api extends Controller
         } else {
             $collection = $data;
         }
-    
+
         return lynx()->data($collection)
             ->status(200)
             ->message(__('lynx.successfully'))
@@ -93,7 +92,7 @@ abstract class Api extends Controller
     public function index()
     {
 
-      
+
         $can = $this->can('viewAny', $this->entity);
         if ($can !== true) {
             return $can;
@@ -105,7 +104,7 @@ abstract class Api extends Controller
             if (!empty($this->resourcesJson)) {
                 // Resource Collect every json field and can reuse in resource
                 $collection = $this->resourcesJson::collection($data)->toResponse(app('request'))->getData();
-                
+
         } else {
             $collection = $data;
         }
@@ -121,7 +120,7 @@ abstract class Api extends Controller
      *
      * @return Renderable
      */
-    public function store()
+    public function store(Request $request)
     {
 
         $can = $this->can('create', $this->entity);
@@ -129,8 +128,7 @@ abstract class Api extends Controller
             return $can;
         }
 
-        $this->data = $this->validate(
-            request(),
+        $this->data = $request->validate(
             $this->rules('store'),
             [],
             method_exists($this, 'niceName') ?
@@ -160,8 +158,8 @@ abstract class Api extends Controller
         if ($can !== true) {
             return $can;
         }
-        
- 
+
+
         if (is_null($data)) {
             return lynx()->status(404)
                 ->message(__('lynx.not_found'))
@@ -178,7 +176,7 @@ abstract class Api extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update($id)
+    public function update(Request $request,$id)
     {
         $data = $this->entity::find($id);
         $can = $this->can('update', $data);
@@ -195,8 +193,7 @@ abstract class Api extends Controller
 
         // Validation Errors
 
-        $this->data = $this->validate(
-            request(),
+        $this->data = $request->validate(
             $this->rules('update',$id),
             [],
             method_exists($this, 'niceName') ?
