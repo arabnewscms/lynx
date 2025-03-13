@@ -19,11 +19,11 @@
         ]
     },
     "require": {
-        "laravel/framework": "^10.0"
+    
     },
   "extra": {
     "branch-alias": {
-            "dev-master": "1.0.18.x-dev"
+            "dev-master": "1.0.19.x-dev"
     },
     "laravel": {
         "providers": [
